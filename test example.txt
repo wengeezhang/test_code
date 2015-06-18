@@ -1,0 +1,133 @@
+var a=new Promise(function(res,rej){
+  setTimeout(function(){res("haha1");},2000);
+});
+
+
+a.then(function(val){console.log(val);return "haha2-succ";},
+  function(reason){console.log(reason);return "haha2-fail";}
+).then(function(val){
+  console.log(val);
+  return new Promise(function(res,rej){setTimeout(function(){rej("haha3-fail");},2000);})
+}).catch(function(reason){
+  console.log(reason);
+  return new Promise(function(res,rej){setTimeout(function(){res("haha4-succ");},2000);})
+}).then(function(val){console.log(val);return 1;}) 
+
+
+a.then(function(val){console.log(val);return "b2-succ";},
+  function(reason){console.log(reason);return "b2-fail";}
+).then(function(val){
+  console.log(val);
+  return new Promise(function(res,rej){setTimeout(function(){rej("b3-fail");},2000);})
+}).catch(function(reason){
+  console.log(reason);
+  return new Promise(function(res,rej){setTimeout(function(){res("b4-succ");},2000);})
+}).then(function(val){console.log(val);return 1;}) 
+
+
+
+
+
+bug£∫∂‡÷ÿthen«∂Ã◊£∫
+1£∫
+var a=new Promise(function(res,rej){
+setTimeout(function(){res("hah1");},2000);
+}).then(function(val){
+   console.log(val);
+   return new Promise(function(res,rej){
+             setTimeout(function(){res("hah2");},2000);
+          }).then(function(val){
+              console.log(val);
+              return "hah3";
+            });
+}).then(function(val){console.log(val);});
+
+
+2£∫
+var a=new Promise(function(res,rej){
+setTimeout(function(){res("hah1");},2000);
+}).then(function(val){
+   console.log(val);
+   return new Promise(function(res,rej){
+             setTimeout(function(){res("hah2");},2000);
+          }).then(function(val){
+              console.log(val);
+              return new Promise(function(res,rej){setTimeout(function(){res("hah3");},2000);});
+            });
+}).then(function(val){console.log(val);});
+
+3.
+var wen=Promise.resolve("ddd").then(function(value){
+  console.log(value);
+  return new Promise(function(res,rej){
+           setTimeout(function(){res("hah1");},2000);
+         }).then(function(val){
+                console.log(val);
+                return Promise.resolve("1").then(function(val){
+                       return Promise.resolve("2");
+                });
+  });
+});
+wen.then(function(value){console.log(value);});
+
+4.macrotask queue
+setTimeout(function(){
+  console.log("s1");
+  new Promise(function(res,rej){
+    setTimeout(function(){res("promise0");},0);
+  }).then(function(value){
+    console.log(value);return "promise1";
+  }).then(function(value){
+    console.log(value);return "promise2";
+  }).then(function(value){
+    console.log(value);return "promise3";
+  }).then(function(value){
+    console.log(value);return "promise4";
+  }).then(function(value){
+    console.log(value);return "promise5";
+  }).then(function(value){console.log(value);return "promise6";});
+},1000);
+setTimeout(function(){console.log("s2");},1000);
+setTimeout(function(){console.log("s3");},1000);
+setTimeout(function(){console.log("s4");},1000);
+setTimeout(function(){console.log("s5");},1000);
+console.log("start");
+
+5.microtask queue
+new Promise(function(res,rej){
+  res("Promise0");
+}).then(function(value){
+    console.log(value);return "promise1";
+}).then(function(value){
+    console.log(value);return "promise2";
+}).then(function(value){
+    console.log(value);return "promise3";
+}).then(function(value){
+    console.log(value);return "promise4";
+}).then(function(value){
+    console.log(value);return "promise5";
+}).then(function(value){console.log(value);return "promise6";});
+console.log("start");
+
+6.macritask+microtask
+setTimeout(function(){
+  console.log("s1");
+  new Promise(function(res,rej){
+    res("promise0");
+  }).then(function(value){
+    console.log(value);return "promise1";
+  }).then(function(value){
+    console.log(value);return "promise2";
+  }).then(function(value){
+    console.log(value);return "promise3";
+  }).then(function(value){
+    console.log(value);return "promise4";
+  }).then(function(value){
+    console.log(value);return "promise5";
+  }).then(function(value){console.log(value);return "promise6";});
+},1000);
+setTimeout(function(){console.log("s2");},1000);
+setTimeout(function(){console.log("s3");},1000);
+setTimeout(function(){console.log("s4");},1000);
+setTimeout(function(){console.log("s5");},1000);
+console.log("start");
