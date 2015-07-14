@@ -131,3 +131,13 @@ setTimeout(function(){console.log("s3");},1000);
 setTimeout(function(){console.log("s4");},1000);
 setTimeout(function(){console.log("s5");},1000);
 console.log("start");
+7.mutationObserver to mimic microtask
+console.log(1);
+setTimeout(function(){console.log(2);},0);
+Promise.resolve("dd").then(function(val){console.log(val);});
+console.log(3);
+8.microtask bug:dd,ddd,dddd
+Promise.resolve("dd").then(function(val){
+  console.log(val);
+  return Promise.resolve("ddd").then(function(val){console.log(val);return "dddd";});
+}).then(function(val){console.log(val);});
