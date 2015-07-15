@@ -139,5 +139,25 @@ console.log(3);
 8.microtask bug:dd,ddd,dddd
 Promise.resolve("dd").then(function(val){
   console.log(val);
-  return Promise.resolve("ddd").then(function(val){console.log(val);return "dddd";});
+  return Promise.resolve("ddd").then(function(val){console.log(val);return "dddd";}).then(function(val){console.log(val);return "ddddd";}).then(function(val){console.log(val);return "dddddd";}).then(function(val){console.log(val);return new Promise(function(res,rej){setTimeout(function(){res("ddddddd");},1000);}).then(function(val){console.log(val);return "dddddddd";});}).then(function(val){console.log(val);return "ddddddddd";});
 }).then(function(val){console.log(val);});
+9.thenable object:
+a.Promise.resolve({then:function(d){console.log(d);d("haha")}}).then(function(val){console.log(val);});
+b.Promise.resolve({then:function(){console.log(1);}}).then(function(val){console.log(val);});
+b.new Promise(function(res,rej){res({then:function(resolve){console.log("jd");resolve("hshs")}})}).then(function(val){console.log(val);});
+c.var wen=new Promise(function(res,rej){setTimeout(function(){res({then:function(){console.log("jd");}})},1000);});
+wen.then(function(val){console.log(val);});
+c.var wen=new Promise(function(res,rej){setTimeout(function(){res({then:function(d){console.log(d);d("jd");}})},1000);});
+wen.then(function(val){console.log(val);});
+10.res(new Promise())
+var wen=new Promise(function(res,rej){res(new Promise(function(res,rej){setTimeout(function(){res("dd")},1000)}));});
+wen.then(function(val){console.log(val);});
+11.res() Ç¶Ì×
+Promise.resolve({then:function(d){d({then:function(f){f("d");}})}}).then(function(val){console.log(val);}); 
+var wen=new Promise(function(res,rej){res(new Promise(function(res,rej){res(Promise.resolve("dd"));}));
+});
+wen.then(function(val){console.log(val);});
+Promise.resolve({then:function(d){d({then:function(f){f(new Promise(function(res,rej){setTimeout(function(){res("dd")},1000)}));}})}}).then(function(val){console.log(val);});
+Promise.resolve({then:function(d){d({then:function(f){f(Promise.resolve({then:function(ll){ll("dd");}}));}})}}).then(function(val){console.log(val);});
+Promise.resolve({then:function(d){d({then:function(f){f(Promise.resolve({then:function(ll){ll(Promise.resolve("ddd"));}}));}})}}).then(function(val){console.log(val);});
+Promise.resolve({then:function(d){d({then:function(f){f(Promise.resolve({then:function(ll){ll(Promise.resolve(new Promise(function(res,rej){setTimeout(function(){res({then:function(mm){mm("dd");}});},1000);})));}}));}})}}).then(function(val){console.log(val);});
